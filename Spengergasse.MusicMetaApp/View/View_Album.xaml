@@ -6,7 +6,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:local="clr-namespace:Spengergasse.MusicMetaApp"
   mc:Ignorable="d"
-  ResizeMode="CanResize"
+  FocusManager.FocusedElement="{Binding ElementName=NameField}"
   Title="Edit Album" Width="300" Height="225">
   <Grid Margin="5">
     <Grid.ColumnDefinitions>
@@ -40,6 +40,7 @@
     </TextBlock>
     <TextBox
       Grid.Row="2" Grid.Column="1" Margin="5"
+      TextWrapping="Wrap" AcceptsReturn="True"
       Text="{Binding Path=CurrentAlbum.Description}" />
     <StackPanel
       Grid.Row="3"

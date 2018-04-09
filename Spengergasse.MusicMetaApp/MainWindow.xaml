@@ -94,15 +94,12 @@
       <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
           <Button
-            Margin="5"
-            Content="Add"
-            Command="{Binding Path=AddSongCommand}"
-            />
+            Margin="5" Content="Add"
+            Command="{Binding Path=AddSongCommand}" />
         </StackPanel>
         <DataGrid
           Name="SongsList"
           AutoGenerateColumns="False"
-          EnableRowVirtualization="True" 
           ItemsSource="{Binding Path=SelectedSongs}"
           SelectedItem="{Binding Path=SelectedSong}"
           RowDetailsVisibilityMode="VisibleWhenSelected"

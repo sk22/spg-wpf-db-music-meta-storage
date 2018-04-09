@@ -22,10 +22,6 @@ namespace Spengergasse.MusicMetaApp.View {
       InitializeComponent();
     }
 
-    private void Save_Click(object sender, RoutedEventArgs e) {
-      DialogResult = true;
-    }
-
     private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e) {
       e.Handled = new Regex("[^0-9]+").IsMatch(e.Text);
     }

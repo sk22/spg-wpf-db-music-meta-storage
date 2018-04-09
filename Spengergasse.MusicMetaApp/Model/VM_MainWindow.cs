@@ -133,8 +133,6 @@ namespace Spengergasse.MusicMetaApp.Model {
         view.ShowDialog();
 
         if (view.DialogResult.HasValue && view.DialogResult.Value) {
-          db.Entry(vm.CurrentArtist).State = System.Data.Entity.EntityState.Modified;
-
           // where new list doesn't contain deleted member
           var deletedArtistMembers = oldArtistMembers
             .Where(am => !vm.CurrentMembers.Select(m => m.Id).Contains(am.MemberId));
@@ -350,10 +348,15 @@ namespace Spengergasse.MusicMetaApp.Model {
           db.Songs.Select(s => s.Genre).Distinct().ToList()
         );
         var view = new View_Song { DataContext = vm };
+        var oldComments = SelectedSong.SongComments.ToList();
         view.ShowDialog();
 
         if (view.DialogResult.HasValue && view.DialogResult.Value) {
-          db.Entry(SelectedSong).State = System.Data.Entity.EntityState.Modified;
+          db.SongComments.RemoveRange(
+            oldComments.Where(c => !vm.CurrentComments.Contains(c))
+          );
+
+          SelectedSong.SongComments = vm.CurrentComments;
           db.SaveChanges();
           PropertyChanged(this, new PropertyChangedEventArgs("SelectedSongs"));
           PropertyChanged(this, new PropertyChangedEventArgs("AllGenres"));
