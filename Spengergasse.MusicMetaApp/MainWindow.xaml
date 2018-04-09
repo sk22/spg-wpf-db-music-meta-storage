@@ -1,12 +1,132 @@
-﻿<Window x:Class="Spengergasse.MusicMetaApp.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Spengergasse.MusicMetaApp"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+﻿<Window
+  x:Class="Spengergasse.MusicMetaApp.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:local="clr-namespace:Spengergasse.MusicMetaApp"
+  mc:Ignorable="d"
+  Loaded="Window_Loaded"
+  Title="Music Meta" Height="450" Width="525">
+  <DockPanel>
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="E_xit" Click="Exit" />
+      </MenuItem>
+    </Menu>
     <Grid>
-        
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="3" />
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <DockPanel Grid.Row="0" Grid.Column="0">
+        <TextBlock DockPanel.Dock="Top" Margin="5">Artists</TextBlock>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" >
+          <Button
+            Margin="3"
+            Command="{Binding Path=AddArtistCommand}"
+            Content="Add" />
+          <Button
+            Margin="3"
+            Command="{Binding Path=RemoveArtistCommand}"
+            Content="Remove" />
+        </StackPanel>
+        <ListBox
+          Name="ArtistsList"
+          ItemsSource="{Binding Path=AllArtists}"
+          SelectedItem="{Binding Path=SelectedArtist}"
+          IsSynchronizedWithCurrentItem="True"
+          DisplayMemberPath="Name"
+          SelectedValuePath="Id"
+          MouseDoubleClick="ArtistsList_MouseDoubleClick"/>
+      </DockPanel>
+
+      <DockPanel Grid.Row="0" Grid.Column="1">
+        <TextBlock DockPanel.Dock="Top" Margin="5">Albums</TextBlock>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" >
+          <Button
+            Margin="3"
+            Command="{Binding Path=AddAlbumCommand}"
+            Content="Add" />
+          <Button
+            Margin="3"
+            Command="{Binding Path=RemoveAlbumCommand}"
+            Content="Remove" />
+        </StackPanel>
+        <ListBox
+          Name="AlbumsList"
+          ItemsSource="{Binding Path=AllAlbums}"
+          SelectedItem="{Binding Path=SelectedAlbum}"
+          IsSynchronizedWithCurrentItem="True"
+          DisplayMemberPath="Name"
+          SelectedValuePath="Id"
+          MouseDoubleClick="AlbumsList_MouseDoubleClick" />
+      </DockPanel>
+
+      <DockPanel Grid.Row="0" Grid.Column="2">
+        <TextBlock DockPanel.Dock="Top" Margin="5">Genres</TextBlock>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" >
+          <Button
+            Margin="3"
+            Command="{Binding Path=RemoveGenreCommand}"
+            Content="Remove" />
+        </StackPanel>
+        <ListBox
+          Name="GenresList"
+          ItemsSource="{Binding Path=AllGenres}"
+          SelectedItem="{Binding Path=SelectedGenre}"
+          IsSynchronizedWithCurrentItem="True"
+          MouseDoubleClick="GenresList_MouseDoubleClick" />
+      </DockPanel>
+
+      <GridSplitter
+        Grid.Row="1"
+        Grid.ColumnSpan="3"
+        HorizontalAlignment="Stretch" />
+
+      <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+          <Button
+            Margin="5"
+            Content="Add"
+            Command="{Binding Path=AddSongCommand}"
+            />
+        </StackPanel>
+        <DataGrid
+          Name="SongsList"
+          AutoGenerateColumns="False"
+          EnableRowVirtualization="True" 
+          ItemsSource="{Binding Path=SelectedSongs}"
+          SelectedItem="{Binding Path=SelectedSong}"
+          RowDetailsVisibilityMode="VisibleWhenSelected"
+          MouseDoubleClick="SongsList_MouseDoubleClick"
+          IsReadOnly="True">
+          <DataGrid.Columns>
+            <DataGridTextColumn
+              Binding="{Binding Path=Track}" 
+              Header="Track" Width="Auto" />
+            <DataGridTextColumn
+              Binding="{Binding Path=Title}" 
+              Header="Title" Width="Auto" />
+            <DataGridTextColumn
+              Binding="{Binding Path=Artist.Name}" 
+              Header="Artist" Width="Auto" />
+            <DataGridTextColumn
+              Binding="{Binding Path=Album.Name}" 
+              Header="Album" Width="Auto" />
+            <DataGridTextColumn
+              Binding="{Binding Path=Genre}" 
+              Header="Genre" Width="Auto" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </DockPanel>
     </Grid>
+  </DockPanel>
 </Window>

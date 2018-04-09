@@ -1,0 +1,70 @@
+﻿<Window
+  x:Class="Spengergasse.MusicMetaApp.View.View_Song"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:local="clr-namespace:Spengergasse.MusicMetaApp.View"
+  mc:Ignorable="d"
+  FocusManager.FocusedElement="{Binding ElementName=NameField}"
+  ResizeMode="CanResize"
+  Title="Edit Song" Height="230" Width="300">
+  <Grid Margin="5">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Grid.Column="0" Margin="5">Track No</TextBlock>
+    <TextBox
+      Margin="5" Grid.Row="0" Grid.Column="1"
+      Text="{Binding Path=CurrentSong.Track}"
+      PreviewTextInput="TextBox_PreviewTextInput" />
+    <TextBlock Grid.Row="1" Grid.Column="0" Margin="5">Title</TextBlock>
+    <TextBox
+      Margin="5" Grid.Row="1" Grid.Column="1"
+      Name="NameField"
+      Text="{Binding Path=CurrentSong.Title}" />
+    <TextBlock Grid.Row="2" Grid.Column="0" Margin="5">
+      Artist
+    </TextBlock>
+    <ComboBox
+      Grid.Row="2" Grid.Column="1" Margin="5"
+      ItemsSource="{Binding Path=AllArtists}"
+      SelectedItem="{Binding Path=CurrentSong.Artist}"
+      DisplayMemberPath="Name"
+      IsEditable="True" />
+    <TextBlock Grid.Row="3" Grid.Column="0" Margin="5">
+      Album
+    </TextBlock>
+    <ComboBox
+      Grid.Row="3" Grid.Column="1" Margin="5"
+      ItemsSource="{Binding Path=AllAlbums}"
+      SelectedItem="{Binding Path=CurrentSong.Album}"
+      DisplayMemberPath="Name"
+      IsEditable="True" />
+    <TextBlock Grid.Row="4" Grid.Column="0" Margin="5">
+      Genre
+    </TextBlock>
+    <ComboBox
+      Grid.Row="4" Grid.Column="1" Margin="5"
+      ItemsSource="{Binding Path=AllGenre}"
+      Text="{Binding Path=CurrentSong.Genre}"
+      IsEditable="True" />
+    <StackPanel
+      Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+      Orientation="Horizontal"
+      HorizontalAlignment="Right"
+      Margin="5">
+      <Button IsDefault="True" Content="Save" Margin="3" Click="Save_Click" />
+      <Button IsCancel="True" Content="Cancel" Margin="3" />
+    </StackPanel>
+  </Grid>
+</Window>

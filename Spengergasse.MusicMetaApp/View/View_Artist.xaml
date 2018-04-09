@@ -1,0 +1,70 @@
+﻿<Window
+  x:Class="Spengergasse.MusicMetaApp.View.View_Artist"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:local="clr-namespace:Spengergasse.MusicMetaApp.View"
+  mc:Ignorable="d"
+  FocusManager.FocusedElement="{Binding ElementName=NameField}"
+  Title="Artist" Height="275" Width="300">
+  <Grid Margin="5" VerticalAlignment="Stretch">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Grid.Column="0" Margin="5">ID</TextBlock>
+    <TextBlock
+      Grid.Row="0" Grid.Column="1" Margin="5"
+      Text="{Binding Path=Id, Mode=OneWay, TargetNullValue='N/A'}" />
+    <TextBlock Grid.Row="1" Grid.Column="0" Margin="5">Name</TextBlock>
+    <TextBox
+      Grid.Row="1"
+      Grid.Column="1"
+      Margin="5"
+      Name="NameField"
+      Text="{Binding Path=Name}" />
+    <TextBlock
+      Grid.Row="2" Grid.Column="0" Margin="5">
+      Members
+    </TextBlock>
+    <Button
+      Grid.Row="3" Grid.Column="0" Margin="5"
+      Content="Add"
+      IsDefault="True"
+      Command="{Binding Path=AddMemberCommand}" />
+    <ComboBox
+      Grid.Row="3" Grid.Column="1"
+      HorizontalAlignment="Stretch"
+      Margin="5"
+      IsEditable="True"
+      DisplayMemberPath="Name"
+      SelectedItem="{Binding Path=SelectedMember}"
+      Text="{Binding Path=TextMember}"
+      ItemsSource="{Binding Path=AllMembers}" />
+    <ListBox
+      Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+      Margin="5"
+      Name="MembersList"
+      ItemsSource="{Binding Path=CurrentMembers}"
+      DisplayMemberPath="Name"
+      SelectedValuePath="Id"
+      MouseDoubleClick="ListBox_MouseDoubleClick" />
+    <StackPanel
+      Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+      Orientation="Horizontal"
+      HorizontalAlignment="Right"
+      Margin="5">
+      <Button IsDefault="True" Content="Save" Margin="3" Click="Save_Click" />
+      <Button IsCancel="True" Content="Cancel" Margin="3" />
+    </StackPanel>
+  </Grid>
+</Window>

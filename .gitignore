@@ -303,3 +303,6 @@ __pycache__/
 
 # OpenCover UI analysis results
 OpenCover/
+
+[Cc]onnection[Ss]trings.config
+App.config
