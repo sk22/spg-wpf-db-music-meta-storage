@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +11,13 @@ namespace Spengergasse.MusicMetaApp.Model {
     public VM_Album(Album album, IEnumerable<Artist> allArtists) {
       CurrentAlbum = album ?? new Album();
       AllArtists = allArtists;
+      CurrentRatings = new ObservableCollection<AlbumRating>(
+        CurrentAlbum.AlbumRatings
+      );
     }
 
     public Album CurrentAlbum { get; set; }
+    public ObservableCollection<AlbumRating> CurrentRatings { get; set; }
     public IEnumerable<Artist> AllArtists { get; set; }
   }
 }

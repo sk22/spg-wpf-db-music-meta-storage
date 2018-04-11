@@ -11,6 +11,9 @@
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
+        <MenuItem
+          Header="_Refresh"
+          Command="{Binding Path=RefreshCommand}" />
         <MenuItem Header="E_xit" Click="Exit" />
       </MenuItem>
     </Menu>
@@ -45,6 +48,7 @@
           IsSynchronizedWithCurrentItem="True"
           DisplayMemberPath="Name"
           SelectedValuePath="Id"
+          
           MouseDoubleClick="ArtistsList_MouseDoubleClick"/>
       </DockPanel>
 
@@ -94,8 +98,11 @@
       <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
           <Button
-            Margin="5" Content="Add"
+            Margin="3" Content="Add"
             Command="{Binding Path=AddSongCommand}" />
+          <Button
+            Margin="3" Content="Remove"
+            Command="{Binding Path=RemoveSongCommand}" />
         </StackPanel>
         <DataGrid
           Name="SongsList"
@@ -107,7 +114,10 @@
           IsReadOnly="True">
           <DataGrid.Columns>
             <DataGridTextColumn
-              Binding="{Binding Path=Track}" 
+              Binding="{Binding Path=DiscNo}" 
+              Header="Disc" Width="Auto" />
+            <DataGridTextColumn
+              Binding="{Binding Path=TrackNo}" 
               Header="Track" Width="Auto" />
             <DataGridTextColumn
               Binding="{Binding Path=Title}" 

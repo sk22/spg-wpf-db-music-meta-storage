@@ -25,7 +25,8 @@ namespace Spengergasse.MusicMetaApp
         public Nullable<int> ArtistId { get; set; }
         public Nullable<int> AlbumId { get; set; }
         public string Genre { get; set; }
-        public Nullable<int> Track { get; set; }
+        public Nullable<int> DiscNo { get; set; }
+        public Nullable<int> TrackNo { get; set; }
         public Nullable<System.DateTime> ReleaseDate { get; set; }
         public string Comment { get; set; }
     

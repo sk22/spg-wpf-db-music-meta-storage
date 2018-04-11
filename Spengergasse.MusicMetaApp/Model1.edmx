@@ -63,7 +63,8 @@
           <Property Name="ArtistId" Type="int" />
           <Property Name="AlbumId" Type="int" />
           <Property Name="Genre" Type="nvarchar" MaxLength="64" />
-          <Property Name="Track" Type="int" />
+          <Property Name="DiscNo" Type="int" />
+          <Property Name="TrackNo" Type="int" />
           <Property Name="ReleaseDate" Type="date" />
           <Property Name="Comment" Type="nvarchar" MaxLength="512" />
         </EntityType>
@@ -283,7 +284,8 @@
           <Property Name="ArtistId" Type="Int32" />
           <Property Name="AlbumId" Type="Int32" />
           <Property Name="Genre" Type="String" MaxLength="64" FixedLength="false" Unicode="true" />
-          <Property Name="Track" Type="Int32" />
+          <Property Name="DiscNo" Type="Int32" />
+          <Property Name="TrackNo" Type="Int32" />
           <Property Name="ReleaseDate" Type="DateTime" Precision="0" />
           <Property Name="Comment" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Album" Relationship="Self.FK_Song_Album" FromRole="Song" ToRole="Album" />
@@ -502,7 +504,8 @@
                 <ScalarProperty Name="ArtistId" ColumnName="ArtistId" />
                 <ScalarProperty Name="AlbumId" ColumnName="AlbumId" />
                 <ScalarProperty Name="Genre" ColumnName="Genre" />
-                <ScalarProperty Name="Track" ColumnName="Track" />
+                <ScalarProperty Name="DiscNo" ColumnName="DiscNo" />
+                <ScalarProperty Name="TrackNo" ColumnName="TrackNo" />
                 <ScalarProperty Name="ReleaseDate" ColumnName="ReleaseDate" />
                 <ScalarProperty Name="Comment" ColumnName="Comment" />
               </MappingFragment>

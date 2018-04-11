@@ -7,7 +7,7 @@
   xmlns:local="clr-namespace:Spengergasse.MusicMetaApp.View"
   mc:Ignorable="d"
   FocusManager.FocusedElement="{Binding ElementName=TitleField}"
-  Title="Edit Song" Height="350" Width="350">
+  Title="Edit Song" Height="400" Width="350">
   <Grid Margin="5">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto" />
@@ -20,50 +20,58 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
-    <TextBlock Grid.Row="0" Grid.Column="0" Margin="5">Track No</TextBlock>
+    <TextBlock Grid.Row="0" Grid.Column="0" Margin="5">Disc No</TextBlock>
     <TextBox
       Margin="5" Grid.Row="0" Grid.Column="1"
-      Text="{Binding Path=CurrentSong.Track}"
+      Text="{Binding Path=CurrentSong.DiscNo}"
       PreviewTextInput="TextBox_PreviewTextInput" />
-    <TextBlock Grid.Row="1" Grid.Column="0" Margin="5">Title</TextBlock>
+    <TextBlock Grid.Row="1" Grid.Column="0" Margin="5">Track No</TextBlock>
     <TextBox
       Margin="5" Grid.Row="1" Grid.Column="1"
+      Text="{Binding Path=CurrentSong.TrackNo}"
+      PreviewTextInput="TextBox_PreviewTextInput" />
+    <TextBlock Grid.Row="2" Grid.Column="0" Margin="5">Title</TextBlock>
+    <TextBox
+      Margin="5" Grid.Row="2" Grid.Column="1"
       Name="TitleField"
       Text="{Binding Path=CurrentSong.Title, UpdateSourceTrigger=PropertyChanged}" />
-    <TextBlock Grid.Row="2" Grid.Column="0" Margin="5">
+    <TextBlock Grid.Row="3" Grid.Column="0" Margin="5">
       Artist
     </TextBlock>
     <ComboBox
-      Grid.Row="2" Grid.Column="1" Margin="5"
+      Grid.Row="3" Grid.Column="1" Margin="5"
       ItemsSource="{Binding Path=AllArtists}"
       SelectedItem="{Binding Path=CurrentSong.Artist}"
-      DisplayMemberPath="Name"
-      IsEditable="True" />
-    <TextBlock Grid.Row="3" Grid.Column="0" Margin="5">
-      Album
-    </TextBlock>
-    <ComboBox
-      Grid.Row="3" Grid.Column="1" Margin="5"
-      ItemsSource="{Binding Path=AllAlbums}"
-      SelectedItem="{Binding Path=CurrentSong.Album}"
+      Text="{Binding Path=ArtistText, Mode=OneWayToSource}"
       DisplayMemberPath="Name"
       IsEditable="True" />
     <TextBlock Grid.Row="4" Grid.Column="0" Margin="5">
-      Genre
+      Album
     </TextBlock>
     <ComboBox
       Grid.Row="4" Grid.Column="1" Margin="5"
-      ItemsSource="{Binding Path=AllGenre}"
-      Text="{Binding Path=CurrentSong.Genre}"
+      ItemsSource="{Binding Path=AllAlbums}"
+      SelectedItem="{Binding Path=CurrentSong.Album}"
+      Text="{Binding Path=AlbumText, Mode=OneWayToSource}"
+      DisplayMemberPath="Name"
       IsEditable="True" />
     <TextBlock Grid.Row="5" Grid.Column="0" Margin="5">
+      Genre
+    </TextBlock>
+    <ComboBox
+      Grid.Row="5" Grid.Column="1" Margin="5"
+      ItemsSource="{Binding Path=AllGenres}"
+      Text="{Binding Path=CurrentSong.Genre}"
+      IsEditable="True" />
+    <TextBlock Grid.Row="6" Grid.Column="0" Margin="5">
       Comments
     </TextBlock>
     <DataGrid
-      Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="5"
+      Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="5"
       ItemsSource="{Binding Path=CurrentComments}"
       CanUserAddRows="True"
       AutoGenerateColumns="False">
@@ -80,7 +88,7 @@
       </DataGrid.Columns>
     </DataGrid>
     <StackPanel
-      Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"
+      Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"
       Orientation="Horizontal"
       HorizontalAlignment="Right"
       Margin="5">

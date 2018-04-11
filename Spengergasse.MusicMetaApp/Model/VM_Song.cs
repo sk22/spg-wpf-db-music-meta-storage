@@ -14,6 +14,8 @@ namespace Spengergasse.MusicMetaApp.Model {
     public ICommand AddCommentCommand { get; set; }
 
     public ObservableCollection<SongComment> CurrentComments { get; set; }
+    public string ArtistText { get; set; }
+    public string AlbumText { get; set; }
 
     public VM_Song(
       Song song,
@@ -22,6 +24,8 @@ namespace Spengergasse.MusicMetaApp.Model {
       IEnumerable<string> allGenres
     ) {
       CurrentSong = song ?? new Song();
+      ArtistText = CurrentSong.Artist?.Name;
+      AlbumText = CurrentSong.Album?.Name;
       AllArtists = allArtists;
       AllAlbums = allAlbums;
       AllGenres = allGenres;

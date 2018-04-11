@@ -12,7 +12,7 @@ namespace Spengergasse.MusicMetaApp.Model {
   class VM_MainWindow : INotifyPropertyChanged {
     private static readonly string ALL_GENRES = "<All Genres>";
     private static readonly Artist ALL_ARTISTS = new Artist { Name = "<All Artists>", Id = 0 };
-    private static readonly Album ALL_ALBUMS = new Album { Name = "<All Album>", Id = 0 };
+    private static readonly Album ALL_ALBUMS = new Album { Name = "<All Albums>", Id = 0 };
     private string _selectedGenre = ALL_GENRES;
     private Artist _selectedArtist = ALL_ARTISTS;
     private Album _selectedAlbum = ALL_ALBUMS;
@@ -21,6 +21,9 @@ namespace Spengergasse.MusicMetaApp.Model {
     public event PropertyChangedEventHandler PropertyChanged;
 
     public VM_MainWindow() {
+      RefreshCommand = new DelegateCommand(
+        o => PropertyChanged(this, new PropertyChangedEventArgs(null)
+      ));
       EditGenreCommand = new DelegateCommand(EditGenreExecuted, GenreOperationCanExecute);
       RemoveGenreCommand = new DelegateCommand(RemoveGenreExecuted, GenreOperationCanExecute);
       AddArtistCommand = new DelegateCommand(AddArtistExecuted);
@@ -30,18 +33,23 @@ namespace Spengergasse.MusicMetaApp.Model {
       EditAlbumCommand = new DelegateCommand(EditAlbumExecuted, AlbumOperationCanExecute);
       RemoveAlbumCommand = new DelegateCommand(RemoveAlbumExecuted, AlbumOperationCanExecute);
       AddSongCommand = new DelegateCommand(AddSongExecuted);
-      EditSongCommand = new DelegateCommand(EditSongExecuted);
+      EditSongCommand = new DelegateCommand(EditSongExecuted, EditSongCanExecute);
+      RemoveSongCommand = new DelegateCommand(RemoveSongExecuted, RemoveSongCanExecute);
     }
+
+    public ICommand RefreshCommand { get; set; }
 
     #region Genres
 
     public IEnumerable<string> AllGenres {
       get {
         using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
-          return new List<string> { ALL_GENRES }
-            .Concat(
-              db.Songs.Select(s => s.Genre).Distinct().ToList()
-            );
+          return new List<string> { ALL_GENRES }.Concat(
+            db.Songs
+              .Where(s => s.Genre != null && s.Genre.Length > 0)
+              .Select(s => s.Genre)
+              .Distinct().ToList()
+          );
         }
       }
     }
@@ -106,7 +114,10 @@ namespace Spengergasse.MusicMetaApp.Model {
       get {
         using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
           return new List<Artist> { ALL_ARTISTS }
-            .Concat(db.Artists.OrderBy(g => g.Name).ToList());
+            .Concat(db.Artists.OrderBy(g => g.Name)
+              .OrderBy(a => a.Name)
+              .ToList()
+            );
         }
       }
     }
@@ -233,7 +244,10 @@ namespace Spengergasse.MusicMetaApp.Model {
       get {
         using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
           return new List<Album> { ALL_ALBUMS }
-            .Concat(db.Albums.OrderBy(g => g.Name).ToList());
+            .Concat(db.Albums
+              .OrderBy(a => a.Name)
+              .ToList()
+            );
         }
       }
     }
@@ -254,12 +268,16 @@ namespace Spengergasse.MusicMetaApp.Model {
     public void EditAlbumExecuted(object param) {
       using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
         db.Albums.Attach(SelectedAlbum);
+        var oldRatings = SelectedAlbum.AlbumRatings.ToList();
         var vm = new VM_Album(SelectedAlbum, db.Artists.ToList());
         var view = new View_Album { DataContext = vm };
         view.ShowDialog();
 
         if (view.DialogResult.HasValue && view.DialogResult.Value) {
-          db.Entry(vm.CurrentAlbum).State = System.Data.Entity.EntityState.Modified;
+          db.AlbumRatings.RemoveRange(
+            oldRatings.Where(r => !vm.CurrentRatings.Contains(r))
+          );
+          SelectedAlbum.AlbumRatings = vm.CurrentRatings;
           db.SaveChanges();
           PropertyChanged(this, new PropertyChangedEventArgs("AllAlbums"));
         }
@@ -269,7 +287,14 @@ namespace Spengergasse.MusicMetaApp.Model {
     public bool AlbumOperationCanExecute(object param)
       => SelectedAlbum != null && SelectedAlbum.Id != 0;
 
-    public void RemoveAlbumExecuted(object param) { }
+    public void RemoveAlbumExecuted(object param) {
+      using (var db = new HIF3bkaiserEntities()) {
+        db.Albums.Attach(SelectedAlbum);
+        db.Albums.Remove(SelectedAlbum);
+        db.SaveChanges();
+        PropertyChanged(this, new PropertyChangedEventArgs("AllAlbums"));
+      }
+    }
 
     public void AddAlbumExecuted(object param) {
       var vm = new VM_Album(null, AllArtists);
@@ -278,6 +303,7 @@ namespace Spengergasse.MusicMetaApp.Model {
 
       if (view.DialogResult.HasValue && view.DialogResult.Value) {
         using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
+          db.Artists.Attach(vm.CurrentAlbum.Artist);
           db.Albums.Add(vm.CurrentAlbum);
           db.SaveChanges();
           PropertyChanged(this, new PropertyChangedEventArgs("AllAlbums"));
@@ -302,51 +328,108 @@ namespace Spengergasse.MusicMetaApp.Model {
           return db.Songs
             .Include("Artist")
             .Include("Album")
-            .Where(s => SelectedArtist.Id == 0 || SelectedArtist.Id == s.ArtistId)
-            .Where(s => SelectedAlbum.Id == 0 || SelectedAlbum.Id == s.AlbumId)
+            .Where(s => SelectedArtist.Id == ALL_ARTISTS.Id
+              || SelectedArtist.Id == s.ArtistId)
+            .Where(s => SelectedAlbum.Id == ALL_ALBUMS.Id
+              || SelectedAlbum.Id == s.AlbumId)
             .Where(s => SelectedGenre == ALL_GENRES || SelectedGenre == s.Genre)
-            .OrderBy(s => s.Id).ToList();
+            .OrderBy(s => s.Album.Name).ThenBy(s => s.DiscNo).ThenBy(s => s.TrackNo)
+            .ToList();
         }
       }
     }
 
     public ICommand AddSongCommand { get; }
+    public ICommand RemoveSongCommand { get; }
     public ICommand EditSongCommand { get; }
+
+    private bool RemoveSongCanExecute(object param) =>
+      SelectedSong != null;
+
+    private void RemoveSongExecuted(object param) {
+      using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
+        db.Songs.Attach(SelectedSong);
+        db.Songs.Remove(SelectedSong);
+
+        db.SaveChanges();
+        PropertyChanged(this, new PropertyChangedEventArgs("SelectedSongs"));
+      }
+    }
 
     private void AddSongExecuted(object param) {
       using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
+        db.Albums.Attach(SelectedAlbum);
+        db.Artists.Attach(SelectedArtist);
+
         var vm = new VM_Song(
-          null,
+          new Song {
+            Artist = SelectedArtist == ALL_ARTISTS ? null : SelectedArtist,
+            Album = SelectedAlbum == ALL_ALBUMS ? null : SelectedAlbum,
+            Genre = SelectedGenre == ALL_GENRES ? null : SelectedGenre
+          },
           db.Artists.ToList(),
           db.Albums.ToList(),
           db.Songs.Select(s => s.Genre).Distinct().ToList()
         );
+
+
         var view = new View_Song { DataContext = vm };
         view.ShowDialog();
 
+
         if (view.DialogResult.HasValue && view.DialogResult.Value) {
-          db.Artists.Attach(vm.CurrentSong.Artist);
-          db.Albums.Attach(vm.CurrentSong.Album);
+
+          if (vm.CurrentSong.Artist == null) {
+            if (vm.ArtistText.Length > 0) {
+              var artist = db.Artists.Add(new Artist {
+                Name = vm.ArtistText
+              });
+              db.SaveChanges();
+              vm.CurrentSong.Artist = artist;
+              PropertyChanged(this, new PropertyChangedEventArgs("AllArtists"));
+            }
+
+            if (vm.AlbumText.Length > 0) {
+              var album = db.Albums.Add(new Album {
+                Name = vm.AlbumText,
+                Artist = vm.CurrentSong.Artist
+              });
+              db.SaveChanges();
+              vm.CurrentSong.Album = album;
+              PropertyChanged(this, new PropertyChangedEventArgs("AllAlbums"));
+            }
+          }
+
+          if (!AllGenres.Contains(vm.CurrentSong.Genre)) {
+            PropertyChanged(this, new PropertyChangedEventArgs("AllGenres"));
+          }
+
           db.Songs.Add(vm.CurrentSong);
+
+          vm.CurrentSong.SongComments = vm.CurrentComments;
           db.SaveChanges();
           PropertyChanged(this, new PropertyChangedEventArgs("SelectedSongs"));
-          PropertyChanged(this, new PropertyChangedEventArgs("AllGenres"));
         }
       }
     }
 
+    private bool EditSongCanExecute(object param) => SelectedSong != null;
+
     private void EditSongExecuted(object param) {
       using (HIF3bkaiserEntities db = new HIF3bkaiserEntities()) {
         db.Songs.Attach(SelectedSong);
-        db.Entry(SelectedSong).Reference(s => s.Artist).Load();
-        db.Entry(SelectedSong).Reference(s => s.Album).Load();
-
+        db.Entry(SelectedSong).Reference("Artist").Load();
+        db.Entry(SelectedSong).Reference("Album").Load();
+        
         var vm = new VM_Song(
           SelectedSong,
           db.Artists.ToList(),
           db.Albums.ToList(),
           db.Songs.Select(s => s.Genre).Distinct().ToList()
         );
+
+        var oldGenre = vm.CurrentSong.Genre;
+
         var view = new View_Song { DataContext = vm };
         var oldComments = SelectedSong.SongComments.ToList();
         view.ShowDialog();
@@ -356,10 +439,39 @@ namespace Spengergasse.MusicMetaApp.Model {
             oldComments.Where(c => !vm.CurrentComments.Contains(c))
           );
 
-          SelectedSong.SongComments = vm.CurrentComments;
+          if (vm.CurrentSong.Artist == null) {
+            if (vm.ArtistText?.Length > 0) {
+              var artist = db.Artists.Add(new Artist { Name = vm.ArtistText });
+              db.SaveChanges();
+              vm.CurrentSong.Artist = artist;
+              PropertyChanged(this, new PropertyChangedEventArgs("AllArtists"));
+            }
+          }
+
+          if (vm.CurrentSong.Album == null) {
+            if (vm.AlbumText?.Length > 0) {
+              var album = db.Albums.Add(
+                new Album {
+                  Name = vm.AlbumText,
+                  Artist = vm.CurrentSong.Artist
+                }
+              );
+              db.SaveChanges();
+              vm.CurrentSong.Album = album;
+              PropertyChanged(this, new PropertyChangedEventArgs("AllAlbums"));
+            }
+          }
+
+          vm.CurrentSong.SongComments = vm.CurrentComments;
+
           db.SaveChanges();
+
+          if (!AllGenres.Contains(vm.CurrentSong.Genre)
+            || oldGenre != vm.CurrentSong.Genre) {
+            PropertyChanged(this, new PropertyChangedEventArgs("AllGenres"));
+          }
+          
           PropertyChanged(this, new PropertyChangedEventArgs("SelectedSongs"));
-          PropertyChanged(this, new PropertyChangedEventArgs("AllGenres"));
         }
       }
     }
